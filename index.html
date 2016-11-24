@@ -1,0 +1,111 @@
+<!doctype html>
+<html class="no-js" lang="">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>Aim</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+html,body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+}
+#form {
+  margin: 20px 40px;
+}
+input {
+  width: 70%;
+}
+h1,h2 {
+  text-align: right;
+  font-family: monospace;
+  margin: 0;
+}
+#rssi {
+  font-size: 35vmax;
+  line-height: 25vmax;
+}
+#diff {
+  color: red;
+}
+small {
+  font-size: 30%;
+}
+h2 {
+  font-size: 10vmax;
+  color: #666;
+}
+.good {
+  color: green !important;
+}
+#output {
+  position: fixed;
+  bottom: 5px;
+  right: 5px;
+}
+#graph {
+  width:100%;
+  height: 100%;
+}
+</style>
+</head>
+<body>
+<div id="form">
+  <input type="url" id="host" name="host" value="baldi.capitolpeak.hamwan.net">
+  <button id="start">Start aiming</button>
+</div>
+<div id="graphbg" style="position: absolute; top: 0; left: 0; z-index: -1; height: 100%; width: 100%;">
+  <div id="graph"></div>
+</div>
+<div id="output">
+  <h1 id="rssi"></h1>
+  <h2><small>peak: </small><span id="max">?</span>(+<span id="diff">?</span>)</h2>
+</div>
+<script
+  src="http://code.jquery.com/jquery-3.1.1.min.js"
+  integrity="sha256-hVVnYaiADRTO2PzUGmuLJr8BLUSjGIZsDYGmIJLv2b8="
+  crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/flot/0.8.3/jquery.flot.min.js"></script>
+<script>
+var rssi_history = [],
+    max = -Infinity,
+    jq_rssi = $('#rssi'),
+    jq_max  = $('#max'),
+    jq_diff = $('#diff');
+
+var options = {
+  grid: {
+    margin: 0,
+    borderWidth: 0
+  },
+  xaxis: {
+    ticks: []
+  }
+};
+
+function get_rssi(host) {
+  $.get("rssi.php", {host: host})
+    .done(function(data) {
+      var rssi = parseInt(data['rssi']);
+      max = Math.max(max, rssi);
+      jq_rssi.html(rssi);
+      jq_max.html(max);
+      jq_diff.html(max - rssi);
+      if ((max - rssi) <= 3) {
+        jq_diff.addClass("good");
+      } else {
+        jq_diff.removeClass("good");
+      }
+      rssi_history.push([rssi_history.length, rssi]);
+      $.plot("#graph", [{data: rssi_history, lines: {lineWidth: 0, fill: true, fillColor: "rgba(0,170,255,0.2)", zero: false}}], options);
+      setTimeout(function(){ get_rssi(host); }, 500);
+    });
+}
+
+$('#start').click(function() {
+  get_rssi($('#host').val());
+});
+</script>
+</body>
+</html>
