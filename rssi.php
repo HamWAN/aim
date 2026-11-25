@@ -1,5 +1,5 @@
 <?php
-// Hardened drop-in replacement for HamWAN/aim rssi.php
+// Hardened drop-in replacement for original HamWAN/aim rssi.php
 // - reports errors as JSON instead of dying silently
 // - works regardless of net-snmp "quick print" settings
 // - discovers the wireless interface index instead of hard-coding .2/.3
