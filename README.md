@@ -6,7 +6,6 @@ Web service displays RSSI readings from a Mikrotik wifi device in convenient mob
 <img src="screenshot.png?raw=true" width="400">
 
 # Demo
-
 https://aim.hamwan.net
 
 # Requirements
