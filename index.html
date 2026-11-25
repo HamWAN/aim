@@ -52,7 +52,7 @@ h2 {
 </head>
 <body>
 <div id="form">
-  <input type="url" id="host" name="host" value="baldi.capitolpeak.hamwan.net">
+  <input type="url" id="host" name="host" value="mapleleaf.capitolpark.hamwan.net">
   <button id="start">Start aiming</button>
 </div>
 <div id="graphbg" style="position: absolute; top: 0; left: 0; z-index: -1; height: 100%; width: 100%;">
@@ -98,6 +98,9 @@ function get_rssi(host) {
         jq_diff.removeClass("good");
       }
       rssi_history.push([rssi_history.length, rssi]);
+      // fixed y range with headroom, so a steady signal doesn't make the graph jump/flash
+      var lo = Math.min.apply(null, rssi_history.map(function(p){ return p[1]; }));
+      options.yaxis = {min: Math.floor((lo - 5) / 5) * 5, max: Math.ceil((max + 5) / 5) * 5};
       $.plot("#graph", [{data: rssi_history, lines: {lineWidth: 0, fill: true, fillColor: "rgba(0,170,255,0.2)", zero: false}}], options);
       setTimeout(function(){ get_rssi(host); }, 500);
     });
